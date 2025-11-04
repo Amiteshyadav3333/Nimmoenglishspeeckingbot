@@ -1,16 +1,3 @@
 {
-  "name": "nimmo-english-bot",
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ]
+  "name": "nimmo-english-bot"
 }

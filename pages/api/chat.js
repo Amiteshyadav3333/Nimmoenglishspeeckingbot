@@ -67,7 +67,7 @@ function checkForCorrections(text) {
     { wrong: /\bhe don't\b/gi, correct: 'he doesn\'t', explanation: 'Use "doesn\'t" with he/she/it' },
     { wrong: /\bshe don't\b/gi, correct: 'she doesn\'t', explanation: 'Use "doesn\'t" with he/she/it' },
     { wrong: /\bit don't\b/gi, correct: 'it doesn\'t', explanation: 'Use "doesn\'t" with he/she/it' },
-    { wrong: /\bi can able to\b/gi, correct: 'I can' or 'I am able to', explanation: 'Don\'t use "can" and "able to" together' }
+    { wrong: /\bi can able to\b/gi, correct: 'I can or I am able to', explanation: 'Don\'t use "can" and "able to" together' }
   ];
 
   commonMistakes.forEach(mistake => {
