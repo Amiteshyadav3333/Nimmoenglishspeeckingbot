@@ -22,6 +22,11 @@ export default async function handler(req, res) {
     });
 
     const data = await aiResponse.json();
+    
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+      throw new Error('Invalid API response');
+    }
+    
     const response = data.candidates[0].content.parts[0].text;
 
     // Check for pronunciation/grammar errors
@@ -34,8 +39,9 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('API Error:', error);
-    res.status(500).json({ 
-      response: "I'm sorry, I'm having technical difficulties. Please try again later." 
+    res.status(200).json({ 
+      response: "Hello! I'm Nimmo. I'm having some technical issues connecting to my AI brain right now. Please make sure your API key is set correctly in Vercel environment variables. You can still practice English with me by typing your messages!",
+      corrections: null
     });
   }
 }
