@@ -8,6 +8,7 @@ export default function NimmoBot() {
   const [inputText, setInputText] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [currentMode, setCurrentMode] = useState('conversation');
+  const [voiceOnlyMode, setVoiceOnlyMode] = useState(false);
   const recognitionRef = useRef(null);
 
   useEffect(() => {
@@ -21,13 +22,29 @@ export default function NimmoBot() {
         const transcript = event.results[0][0].transcript;
         setInputText(transcript);
         setIsListening(false);
+        
+        // Auto-send in voice-only mode
+        if (voiceOnlyMode) {
+          setTimeout(() => {
+            sendMessage();
+          }, 500);
+        }
       };
 
       recognitionRef.current.onerror = () => {
         setIsListening(false);
       };
     }
-  }, []);
+  }, [voiceOnlyMode]);
+
+  // Auto-start listening when voice-only mode is enabled
+  useEffect(() => {
+    if (voiceOnlyMode && !isListening) {
+      setTimeout(() => {
+        startListening();
+      }, 1000);
+    }
+  }, [voiceOnlyMode]);
 
   const startListening = () => {
     if (recognitionRef.current) {
@@ -81,6 +98,13 @@ export default function NimmoBot() {
       }
 
       speakText(data.response);
+      
+      // Auto-listen after bot speaks in voice-only mode
+      if (voiceOnlyMode) {
+        setTimeout(() => {
+          startListening();
+        }, 2000);
+      }
     } catch (error) {
       const errorMessage = { type: 'bot', text: "Sorry, I'm having trouble right now. Please try again!" };
       setMessages(prev => [...prev, errorMessage]);
@@ -94,8 +118,22 @@ export default function NimmoBot() {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
-            <h1 className="text-3xl font-bold text-center">Nimmo - English Speaking Bot</h1>
-            <p className="text-center mt-2 opacity-90">Your Professional English Learning Companion</p>
+            <div className="flex justify-between items-center">
+              <div className="flex-1">
+                <h1 className="text-3xl font-bold text-center">Nimmo - English Speaking Bot</h1>
+                <p className="text-center mt-2 opacity-90">Your Professional English Learning Companion</p>
+              </div>
+              <button
+                onClick={() => setVoiceOnlyMode(!voiceOnlyMode)}
+                className={`px-4 py-2 rounded-lg border-2 transition-colors ${
+                  voiceOnlyMode 
+                    ? 'bg-white text-blue-600 border-white' 
+                    : 'bg-transparent text-white border-white hover:bg-white hover:text-blue-600'
+                }`}
+              >
+                🎤 Voice Only
+              </button>
+            </div>
           </div>
 
           <div className="p-4 bg-gray-50 border-b">
@@ -158,30 +196,55 @@ export default function NimmoBot() {
           </div>
 
           <div className="p-6 bg-gray-50 border-t">
-            <div className="flex space-x-4">
-              <input
-                type="text"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                placeholder="Type your message or use voice..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                onClick={isListening ? stopListening : startListening}
-                className={`px-4 py-2 rounded-lg ${
-                  isListening ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
-                } hover:opacity-80`}
-              >
-                {isListening ? <MicOff size={20} /> : <Mic size={20} />}
-              </button>
-              <button
-                onClick={sendMessage}
-                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-              >
-                <Send size={20} />
-              </button>
-            </div>
+            {voiceOnlyMode ? (
+              <div className="flex justify-center">
+                <button
+                  onClick={isListening ? stopListening : startListening}
+                  className={`px-8 py-4 rounded-full text-white text-lg font-semibold transition-all ${
+                    isListening 
+                      ? 'bg-red-500 animate-pulse shadow-lg' 
+                      : 'bg-blue-500 hover:bg-blue-600 shadow-md'
+                  }`}
+                >
+                  {isListening ? (
+                    <div className="flex items-center space-x-2">
+                      <MicOff size={24} />
+                      <span>Listening...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <Mic size={24} />
+                      <span>Tap to Speak</span>
+                    </div>
+                  )}
+                </button>
+              </div>
+            ) : (
+              <div className="flex space-x-4">
+                <input
+                  type="text"
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                  placeholder="Type your message or use voice..."
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={isListening ? stopListening : startListening}
+                  className={`px-4 py-2 rounded-lg ${
+                    isListening ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
+                  } hover:opacity-80`}
+                >
+                  {isListening ? <MicOff size={20} /> : <Mic size={20} />}
+                </button>
+                <button
+                  onClick={sendMessage}
+                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                >
+                  <Send size={20} />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
