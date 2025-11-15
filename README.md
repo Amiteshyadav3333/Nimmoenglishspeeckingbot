@@ -25,10 +25,11 @@ npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 ```
 
-### 3. Configure AI API
-Edit `pages/api/chat.js` and replace:
-- `YOUR_AI_API_ENDPOINT` with your AI service endpoint (OpenAI, Claude, etc.)
-- `YOUR_API_KEY` with your actual API key
+### 3. Configure Gemini API
+Get your Gemini API key from Google AI Studio and add it to `.env.local`:
+```
+GEMINI_API_KEY=your_actual_gemini_api_key_here
+```
 
 ### 4. Run Development Server
 ```bash
@@ -44,30 +45,20 @@ npm i -g vercel
 vercel
 ```
 
-## API Integration
+## Gemini API Integration
 
-The bot supports multiple AI providers. Update the API endpoint in `pages/api/chat.js`:
-
-### OpenAI Example:
-```javascript
-const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-  },
-  body: JSON.stringify({
-    model: 'gpt-3.5-turbo',
-    messages: messages
-  })
-});
-```
+This bot uses Google's Gemini AI. Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey).
 
 ### Environment Variables
 Create `.env.local` file:
 ```
-OPENAI_API_KEY=your_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
+
+### For Vercel Deployment:
+Add environment variable in Vercel dashboard:
+- Name: `GEMINI_API_KEY`
+- Value: Your actual Gemini API key
 
 ## Usage
 
@@ -76,6 +67,14 @@ OPENAI_API_KEY=your_api_key_here
 3. **Writing Mode**: Get feedback on your writing
 4. **Voice Input**: Click the microphone to speak
 5. **Audio Output**: Click the speaker icon to hear responses
+
+## Getting Gemini API Key
+
+1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Sign in with your Google account
+3. Click "Create API Key"
+4. Copy the generated key
+5. Add it to your `.env.local` file
 
 ## Customization
 
